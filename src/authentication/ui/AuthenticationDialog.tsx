@@ -1,7 +1,7 @@
 import {Dialog} from "@blueprintjs/core";
 import * as React from "react";
 import INotificationService, {NotificationType} from "../../notification/service/INotificationService";
-import IAuthenticationService from "../service/IAuthenticationService";
+import IAuthenticationService, {IAuthenticationChangeListener} from "../service/IAuthenticationService";
 import AuthenticationForm from "./AuthenticationForm";
 
 export interface IAuthenticationOverlayProps {
@@ -14,10 +14,20 @@ export interface IAuthenticationDialogState {
     readonly show: boolean,
 }
 
-class AuthenticationDialog extends React.Component<IAuthenticationOverlayProps, IAuthenticationDialogState> {
+class AuthenticationDialog extends React.Component<IAuthenticationOverlayProps, IAuthenticationDialogState> implements IAuthenticationChangeListener {
     public state: IAuthenticationDialogState = {
         loading: false,
-        show: true,
+        show: false,
+    };
+
+
+    public componentDidMount = (): void => {
+        this.props.authenticationService.registerAuthenticationChangeListener(this);
+        this.onAuthenticationChange();
+    };
+
+    public componentWillUnmount = (): void => {
+        this.props.authenticationService.deregisterAuthenticationChangeListener(this);
     };
 
     public render = () => {
@@ -26,6 +36,12 @@ class AuthenticationDialog extends React.Component<IAuthenticationOverlayProps, 
                 <AuthenticationForm loading={this.state.loading} onLogin={this.onLogin}/>
             </Dialog>
         ];
+    };
+
+    public onAuthenticationChange = () => {
+        this.setState({
+            show: this.props.authenticationService.getCurrentAccessToken() === null
+        })
     };
 
     private onLogin = (

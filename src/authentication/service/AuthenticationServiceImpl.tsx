@@ -21,6 +21,9 @@ class AuthenticationServiceImpl implements IAuthenticationService {
                 .authenticate(username, password)
                 .then((result: IAuthenticationResponse) => {
                     self.accessToken = result.accessToken;
+                    this.authenticationChangeListeners.forEach((listener) => {
+                        listener.onAuthenticationChange();
+                    });
                     onFulfilled(true);
                 })
                 .catch((error) => {

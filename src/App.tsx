@@ -4,16 +4,26 @@ import '../node_modules/@blueprintjs/icons/lib/css/blueprint-icons.css';
 import './App.css';
 
 interface IAppProps {
-  toastHandler: JSX.Element,
-  authenticationOverlay: JSX.Element
+    authenticationOverlay: JSX.Element,
+    toastHandler: JSX.Element,
+    sidebar: JSX.Element
 }
 
 class App extends React.Component<IAppProps> {
   public render() {
-    return [
-      this.props.toastHandler,
-      this.props.authenticationOverlay
-    ];
+    return <div className="app">
+        {this.props.toastHandler}
+        {this.props.authenticationOverlay}
+        <div className="app__sidebar">
+            {this.props.sidebar}
+        </div>
+        <div className="app__main">
+            <div className="app__pages">
+              {this.props.children}
+            </div>
+        </div>
+      </div>
+    ;
   }
 }
 
